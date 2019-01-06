@@ -1,0 +1,29 @@
+{
+  "name": "gdax-pulse",
+  "version": "1.0.0",
+  "description": "Takes in messages from the gdax (coinbase-pro) web-socket and monitors for specific events.",
+  "main": "gdax-pulse.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha || exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaaelite21/gdax-pulse.git"
+  },
+  "keywords": [
+    "gdax"
+  ],
+  "author": "aaaelite21",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aaaelite21/gdax-pulse/issues"
+  },
+  "homepage": "https://github.com/aaaelite21/gdax-pulse#readme",
+  "devDependencies": {
+    "gdax-sim": "^1.0.0",
+    "mocha": "^5.2.0"
+  }
+}
