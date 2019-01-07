@@ -33,6 +33,7 @@ class Pulse {
             }
 
             if (this.lastDay !== now.getDate()) {
+                this.lastDay = now.getDate();
                 this.onDay()
             }
 
@@ -51,7 +52,7 @@ class Pulse {
         } else if (type === 'h6') {
             this.onHour6 = func;
         } else if (type === 'd') {
-            this.day = func;
+            this.onDay = func;
         }
     }
 
