@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/aaaelite21/gdax-pulse#readme",
   "devDependencies": {
-    "gdax-sim": "^1.0.0",
     "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "gdax-sim": "^1.0.1"
   }
 }
