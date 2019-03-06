@@ -58,7 +58,7 @@ describe("#Gdax-Pulse", () => {
             });
             sim.websocketClient.on('message', (message) => {
                 pulse.analyze(message);
-            })
+            });
             sim.backtest(TwoDays);
             assert.equal(minCounter, 0)
             assert.equal(fiveMinCounter, 0)
@@ -66,6 +66,38 @@ describe("#Gdax-Pulse", () => {
             assert.equal(hourCounter, 0)
             assert.equal(dayCounter, 0); //could get messed up based on local time
             assert.equal(utcDayCounter, 0);
+        });
+    });
+    describe("#All Events", () => {
+        let sim = new GdaxSim();
+        let pulse = new GdaxPulse();
+        it('event functions are fed the current pulse data as parameters', () => {
+            function test(price, time) {
+                assert.equal(price, pulse.currentData.price);
+                assert.equal(time.getTime(), pulse.currentData.time.getTime());
+            }
+            pulse.on('m1', (price, time) => {
+                test(price, time);
+            });
+            pulse.on('m5', (price, time) => {
+                test(price, time);
+            });
+            pulse.on('m15', (price, time) => {
+                test(price, time);
+            });
+            pulse.on('h1', (price, time) => {
+                test(price, time);
+            });
+            pulse.on('d', (price, time) => {
+                test(price, time);
+            });
+            pulse.on('d-utc', (price, time) => {
+                test(price, time);
+            });
+            sim.websocketClient.on('message', (message) => {
+                pulse.analyze(message);
+            });
+            sim.backtest(TwoDays);
         });
     })
 
