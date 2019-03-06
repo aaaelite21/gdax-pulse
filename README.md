@@ -18,24 +18,27 @@ npm i gdax-pulse
 const Gdax = require('gdax');
 const GdaxPulse = require('gdax-pulse');
 
- let pulse = new GdaxPulse();
+let pulse = new GdaxPulse();
 
-pulse.on('d-utc', () => {
-  console.log('do this every new utc day');
+pulse.on('m1', (price, time) => {
+    console.log('do this every minute');
+});
+
+pulse.on('new-price', (price, time) => {
+    console.log('current price:', price);
 });
 
 const websocket = new Gdax.WebsocketClient('BTC-USD');
 websocket.on("message", data => {
-  pulse.analyze(data);
+    pulse.analyze(data);
 });
-
 ```
 ## Event List
  - minute: 'm1'
  - 5 minutes: 'm5'
  - 15 minutes: 'm15'
  - hour: 'h1'
- - 6 houra: 'h6'
+ - 6 hours: 'h6'
  - local day: 'd'
  - utc day: 'd-utc'
  - new price traded: 'new-price'
