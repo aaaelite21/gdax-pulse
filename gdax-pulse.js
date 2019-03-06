@@ -6,7 +6,7 @@ class Pulse {
         this.lastDay = now.getDate();
         this.lasUtcDay = now.getUTCDate();
         this.currentData = {
-            time: toTheMinute(now).getTime(),
+            time: toTheMinute(now),
             price: 0
         }
     }
@@ -14,7 +14,11 @@ class Pulse {
     analyze(message) {
         //update Time
         if (message.type === 'match') {
-            this.currentData.price = parseFloat(message.price);
+            let priceOfMatch = parseFloat(message.price);
+            if (priceOfMatch !== this.currentData.price) {
+                this.currentData.price = priceOfMatch;
+                this.onNewPrice(this.currentData.price, this.currentData.time);
+            }
         }
 
         if (message.time) {
@@ -67,6 +71,8 @@ class Pulse {
             this.onDay = func;
         } else if (type === 'd-utc') {
             this.onUtcDay = func;
+        } else if (type === 'new-price') {
+            this.onNewPrice = func;
         }
     }
 
@@ -77,6 +83,7 @@ class Pulse {
     onHour6() {}
     onDay() {}
     onUtcDay() {}
+    onNewPrice() {}
 }
 
 module.exports = Pulse;

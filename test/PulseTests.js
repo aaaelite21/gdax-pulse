@@ -26,6 +26,25 @@ describe("#Gdax-Pulse", () => {
         });
     });
 
+    describe("#Price Events", () => {
+        let sim = new GdaxSim();
+        let pulse = new GdaxPulse();
+        sim.websocketClient.on('message', (message) => {
+            pulse.analyze(message);
+        });
+        it('Fires every time a new price is traded', () => {
+            let lastPrice = 0;
+            let ran = false;
+            pulse.on('new-price', (price) => {
+                assert(lastPrice !== price, "event run on redundent price");
+                lastPrice = price;
+                ran = true;
+            });
+            sim.backtest(TwoDays);
+            assert(ran, '"new-price" event not run');
+        });
+    });
+
     describe("#Time Events", () => {
         let sim = new GdaxSim();
         let pulse = new GdaxPulse();
@@ -92,6 +111,9 @@ describe("#Gdax-Pulse", () => {
                 test(price, time);
             });
             pulse.on('d-utc', (price, time) => {
+                test(price, time);
+            });
+            pulse.on('new-price', (price, time) => {
                 test(price, time);
             });
             sim.websocketClient.on('message', (message) => {
