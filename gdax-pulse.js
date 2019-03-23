@@ -1,10 +1,11 @@
 class Pulse {
-    constructor() {
+    constructor(delay) {
         let now = new Date();
         this.lastMinute = now.getMinutes();
         this.lastHour = now.getHours();
         this.lastDay = now.getDate();
         this.lasUtcDay = now.getUTCDate();
+        this.delay = delay !== undefined ? delay : 0;
         this.currentData = {
             time: toTheMinute(now),
             price: 0
@@ -22,7 +23,8 @@ class Pulse {
         }
 
         if (message.time) {
-            let now = new Date(message.time);
+            let current = new Date(message.time);
+            let now = new Date(current.getTime() - 1000 * this.delay)
             if (this.lastMinute !== now.getMinutes()) {
                 this.lastMinute = now.getMinutes();
                 //update time
