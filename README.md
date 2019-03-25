@@ -43,6 +43,30 @@ websocket.on("message", data => {
  - utc day: 'd-utc'
  - new price traded: 'new-price'
 
+## Delay
+A delay was introduced to help better manage exchange api compliance. Coinbase Pro specifically axes out at 4 calls per second. If you call get historic rates on more then 4 assets every hour then you will max out and stop receiving information.
+### Example Demonstrating Delay
+```
+const Gdax = require('gdax');
+const GdaxPulse = require('gdax-pulse');
+
+let pulse = new GdaxPulse();
+let delayedPulse = new GdaxPulse(10);
+
+pulse.on('m1', (price, time) => {
+    console.log('now');
+});
+
+delayedPulse.on('m1', (price, time) => {
+    console.log('10 seconds from now');
+});
+
+const websocket = new Gdax.WebsocketClient('BTC-USD');
+websocket.on("message", data => {
+    pulse.analyze(data);
+    delayedPulse.analyze(data);
+});
+```
 ## Coming Soon
 - Binance Support
 
