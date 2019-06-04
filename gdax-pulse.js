@@ -1,6 +1,8 @@
 const AnalyzeGdax = require('./AnalyzeFunctions/GdaxAnalyze')
 const toTheMinute = require('./Lib/toTheMinute')
 const AnalyzeBinance = require('./AnalyzeFunctions/BinanceAnalyze')
+const AnalyzeKraken = require('./AnalyzeFunctions/KrakenAnalyze')
+const AnalyzeHitBTC = require('./AnalyzeFunctions/HitBTCAnalyze')
 class Pulse {
     constructor(delay,exchange) {
         this.exchange = exchange === undefined ? "gdax" : exchange.toLowerCase();
@@ -16,8 +18,14 @@ class Pulse {
         else if(this.exchange == "binance"){
             this.analyze = AnalyzeBinance.bind(this);
         }
+        else if(this.exchange == "hitbtc"){
+            this.analyze = AnalyzeHitBTC.bind(this);
+        }
+        else if(this.exchange == "kraken"){
+            this.analyze = AnalyzeKraken.bind(this);
+        }
         else
-            throw new error("incorrect exchange, select gdax or binance")
+            throw new error("incorrect exchange, select gdax, binance, kraken, or hitbtc")
         this.currentData = {
             time: toTheMinute(now),
             price: 0
