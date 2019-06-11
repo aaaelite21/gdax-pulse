@@ -67,8 +67,49 @@ websocket.on("message", data => {
     delayedPulse.analyze(data);
 });
 ```
-## Coming Soon
-- Binance Support
+## Using Other Exchanges
+ - For Binance use [node-binance-api](https://github.com/jaggedsoft/node-binance-api)
+```
+const binance = require('node-binance-api')().options({});
+const GdaxPulse = require('gdax-pulse');
+
+let pulse = new GdaxPulse(0, 'binance');
+
+pulse.on('m1', (price, time) => {
+    console.log('now');
+});
+
+binance.websockets.trades(['BTCUSDC'], (message) => {
+     pulse.analyze(data);
+});
+```
+
+ - For intergration with other exchanges use [ccxws](https://github.com/altangent/ccxws)
+ ```
+ const ccxws = require("ccxws");
+const hitbtcExchange = new ccxws.hitbtc();
+const GdaxPulse = require('../gdax-pulse');
+
+let pulse = new GdaxPulse(0, 'ccxws');
+
+pulse.on('m1', (price, time) => {
+    console.log('now');
+});
+
+const market = {
+    id: "ETHBTC",
+    base: "ETH",
+    quote: "BTC",
+};
+
+hitbtcExchange.on("trade", (trade) => {
+    pulse.analyze(trade);
+});
+
+hitbtcExchange.subscribeTrades(market);
+ ```
+ - Please refer to [ccxws](https://github.com/altangent/ccxws) ReadMe for further instruction.
+ - Also note some exchanges (Kraken in praticular) use a different notation.
 
 ## Visit Our The Dev Blog
  - [DownToCrypto.com](https://downtocrypto.com)

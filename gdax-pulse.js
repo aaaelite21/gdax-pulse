@@ -1,10 +1,9 @@
-const AnalyzeGdax = require('./AnalyzeFunctions/GdaxAnalyze')
-const toTheMinute = require('./Lib/toTheMinute')
-const AnalyzeBinance = require('./AnalyzeFunctions/BinanceAnalyze')
-const AnalyzeKraken = require('./AnalyzeFunctions/KrakenAnalyze')
-const AnalyzeHitBTC = require('./AnalyzeFunctions/HitBTCAnalyze')
+const AnalyzeGdax = require('./AnalyzeFunctions/GdaxAnalyze');
+const toTheMinute = require('./Lib/toTheMinute');
+const AnalyzeBinance = require('./AnalyzeFunctions/BinanceAnalyze');
+const AnalyzeCcxws = require('./AnalyzeFunctions/CcxwsAnalyze');
 class Pulse {
-    constructor(delay,exchange) {
+    constructor(delay, exchange) {
         this.exchange = exchange === undefined ? "gdax" : exchange.toLowerCase();
         let now = new Date();
         this.lastMinute = now.getMinutes();
@@ -12,27 +11,22 @@ class Pulse {
         this.lastDay = now.getDate();
         this.lasUtcDay = now.getUTCDate();
         this.delay = delay !== undefined ? delay : 0;
-        if (this.exchange == "gdax"){
+        if (this.exchange == "gdax") {
             this.analyze = AnalyzeGdax.bind(this);
-        }
-        else if(this.exchange == "binance"){
+        } else if (this.exchange == "binance") {
             this.analyze = AnalyzeBinance.bind(this);
+        } else if (this.exchange == "ccxws") {
+            this.analyze = AnalyzeCcxws.bind(this);
+        } else {
+            throw new error("incorrect exchange, select gdax, binance and anything on CCXWS")
         }
-        else if(this.exchange == "hitbtc"){
-            this.analyze = AnalyzeHitBTC.bind(this);
-        }
-        else if(this.exchange == "kraken"){
-            this.analyze = AnalyzeKraken.bind(this);
-        }
-        else
-            throw new error("incorrect exchange, select gdax, binance, kraken, or hitbtc")
         this.currentData = {
             time: toTheMinute(now),
             price: 0
         }
     }
 
-    analyze(message){}
+    analyze(message) {}
 
     on(type, func) {
         if (type === 'm1') {
@@ -63,7 +57,7 @@ class Pulse {
     onUtcDay() {}
     onNewPrice() {}
 
-    analyzeNewTime(now){
+    analyzeNewTime(now) {
         if (this.lastMinute !== now.getMinutes()) { // will not change after this
             this.lastMinute = now.getMinutes();
             //update time

@@ -1,5 +1,4 @@
-const toTheMinute = require('../Lib/toTheMinute')
-module.exports=function(message){
+module.exports = function (message) {
     //update Time
     if (message.side === 'buy' || message.side === 'sell') { //looking for the most recent price match = when a maker and taker order are paired up
         let priceOfMatch = parseFloat(message.price);
