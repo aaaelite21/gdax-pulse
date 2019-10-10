@@ -1,6 +1,6 @@
 {
   "name": "gdax-pulse",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Takes in messages from the gdax (coinbase-pro) web-socket and monitors for specific events.",
   "main": "gdax-pulse",
   "directories": {
