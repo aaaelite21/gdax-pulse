@@ -33,19 +33,24 @@ websocket.on("message", data => {
     pulse.analyze(data);
 });
 ```
+
 ## Event List
- - minute: 'm1'
- - 5 minutes: 'm5'
- - 15 minutes: 'm15'
- - hour: 'h1'
- - 6 hours: 'h6'
- - local day: 'd'
- - utc day: 'd-utc'
- - new price traded: 'new-price'
+
+- minute: 'm1'
+- 5 minutes: 'm5'
+- 15 minutes: 'm15'
+- hour: 'h1'
+- 6 hours: 'h6'
+- local day: 'd'
+- utc day: 'd-utc'
+- new price traded: 'new-price'
 
 ## Delay
+
 A delay was introduced to help better manage exchange api compliance. Coinbase Pro specifically axes out at 4 calls per second. If you call get historic rates on more then 4 assets every hour then you will max out and stop receiving information.
+
 ### Example Demonstrating Delay
+
 ```
 const Gdax = require('gdax');
 const GdaxPulse = require('gdax-pulse');
@@ -67,8 +72,11 @@ websocket.on("message", data => {
     delayedPulse.analyze(data);
 });
 ```
+
 ## Using Other Exchanges
- - For Binance use [node-binance-api](https://github.com/jaggedsoft/node-binance-api)
+
+- For Binance use [node-binance-api](https://github.com/jaggedsoft/node-binance-api)
+
 ```
 const binance = require('node-binance-api')().options({});
 const GdaxPulse = require('gdax-pulse');
@@ -84,32 +92,35 @@ binance.websockets.trades(['BTCUSDC'], (message) => {
 });
 ```
 
- - For intergration with other exchanges use [ccxws](https://github.com/altangent/ccxws)
- ```
- const ccxws = require("ccxws");
+- For intergration with other exchanges use [ccxws](https://github.com/altangent/ccxws)
+
+```
+const ccxws = require("ccxws");
 const hitbtcExchange = new ccxws.hitbtc();
 const GdaxPulse = require('../gdax-pulse');
 
 let pulse = new GdaxPulse(0, 'ccxws');
 
 pulse.on('m1', (price, time) => {
-    console.log('now');
+   console.log('now');
 });
 
 const market = {
-    id: "ETHBTC",
-    base: "ETH",
-    quote: "BTC",
+   id: "ETHBTC",
+   base: "ETH",
+   quote: "BTC",
 };
 
-hitbtcExchange.on("trade", (trade) => {
-    pulse.analyze(trade);
+hitbtcExchange.on("ticker", (tick) => {
+   pulse.analyze(tick);
 });
 
-hitbtcExchange.subscribeTrades(market);
- ```
- - Please refer to [ccxws](https://github.com/altangent/ccxws) ReadMe for further instruction.
- - Also note some exchanges (Kraken in praticular) use a different notation.
+hitbtcExchange.subscribeTicker(market);
+```
+
+- Please refer to [ccxws](https://github.com/altangent/ccxws) ReadMe for further instruction.
+- Also note some exchanges (Kraken in praticular) use a different notation.
 
 ## Visit Our The Dev Blog
- - [DownToCrypto.com](https://downtocrypto.com)
+
+- [DownToCrypto.com](https://downtocrypto.com)
