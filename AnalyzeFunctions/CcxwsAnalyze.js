@@ -8,8 +8,8 @@ module.exports = function (message) {
         }
     }
 
-    if (message.timestamp) {
-        let current = new Date(message.timestamp);
+    if (message.timestamp || message.unix) {
+        let current = new Date(message.timestamp || message.unix);
         let now = new Date(current.getTime() - 1000 * this.delay)
         this.analyzeNewTime(now);
     }
