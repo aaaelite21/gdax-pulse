@@ -87,6 +87,27 @@ describe("#Gdax-Pulse", () => {
             assert.equal(utcDayCounter, 0);
         });
     });
+
+    describe("#Time Events", () => {
+        let sim = new GdaxSim();
+        let pulse = new GdaxPulse();
+        it('runs the events the proper number of time', () => {
+            //one test to same time as this test takes 250ms on my machiene
+            let match_counter = TwoDays.length * 4;
+
+            pulse.on('match', () => {
+                match_counter--;
+            });
+
+            sim.websocketClient.on('message', (message) => {
+                pulse.analyze(message);
+            });
+
+            sim.backtest(TwoDays);
+            assert.equal(match_counter, 0)
+        });
+    });
+
     describe("#All Events", () => {
         let sim = new GdaxSim();
         let pulse = new GdaxPulse();
