@@ -45,6 +45,8 @@ class Pulse {
             this.onUtcDay = func;
         } else if (type === 'new-price') {
             this.onNewPrice = func;
+        } else if (type === 'match') {
+            this.onMatch = func;
         }
     }
 
@@ -56,6 +58,7 @@ class Pulse {
     onDay() {}
     onUtcDay() {}
     onNewPrice() {}
+    onMatch() {}
 
     analyzeNewTime(now) {
         if (this.lastMinute !== now.getMinutes()) { // will not change after this

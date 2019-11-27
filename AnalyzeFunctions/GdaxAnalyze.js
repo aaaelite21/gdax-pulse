@@ -6,6 +6,8 @@ module.exports = function (message) {
             this.currentData.price = priceOfMatch;
             this.onNewPrice(this.currentData.price, this.currentData.time);
         }
+
+        this.onMatch(this.currentData.price, this.currentData.time, message);
     }
 
     if (message.time) {
