@@ -26,8 +26,8 @@
     "mocha": "^5.2.0"
   },
   "dependencies": {
-    "gdax-sim": "^1.0.15",
-    "node-binance-api": "^0.9.7",
+    "gdax-sim": "^1.0.16",
+    "node-binance-api": "^0.9.9",
     "node-kraken-api": "^0.4.1"
   }
 }
