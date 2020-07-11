@@ -197,7 +197,7 @@ describe("#Gdax-Pulse", () => {
       assert.equal(clsoeCalled, 2, "closes failed");
       assert.equal(hourCalled, 14, "hours failed");
       assert.equal(daysCalled, 2, "days failed");
-      assert.equal(_15sCalled, 14 * 4 - 2, "days failed");
+      assert.equal(_15sCalled, 52/*6.5 * 2 * 4*/, "days failed");
     });
   });
 });
