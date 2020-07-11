@@ -3,11 +3,16 @@ const toTheMinute = require("./Lib/toTheMinute");
 const AnalyzeBinance = require("./AnalyzeFunctions/BinanceAnalyze");
 const AnalyzeCcxws = require("./AnalyzeFunctions/CcxwsAnalyze");
 const AnalyzeAlpacha = require("./AnalyzeFunctions/Alpacha");
+
+const _24HrAnalysis = require("./Lib/24HrMarketTime");
+const StandardStockHours = require("./Lib/StandardStockMarket");
+
 class Pulse {
   constructor(delay, exchange) {
     this.exchange = exchange === undefined ? "gdax" : exchange.toLowerCase();
     let now = new Date();
     this.lastMinute = now.getMinutes();
+    this.last15 = this.lastMinute % 15;
     this.lastHour = now.getHours();
     this.lastDay = now.getDate();
     this.lasUtcDay = now.getUTCDate();
@@ -19,12 +24,22 @@ class Pulse {
     } else if (this.exchange == "ccxws") {
       this.analyze = AnalyzeCcxws.bind(this);
     } else if (this.exchange == "alpacha") {
-      this.analyze = AnalyzeCcxws.bind(this);
+      //delay by half an hour to handle open at 9:30
+      let shiftedTime = new Date(now.getTime() - 3600000 / 2);
+      this.lastHour = shiftedTime.getUTCHours();
+
+      this.analyze = AnalyzeAlpacha.bind(this);
     } else {
       throw new error(
-        "incorrect exchange, select gdax, binance and anything on CCXWS",
+        "incorrect exchange, select 'gdax', 'binance', 'alpacha', or  anything on CCXWS",
       );
     }
+
+    this.analyzeNewTime =
+      this.exchange === "alpacha"
+        ? StandardStockHours.bind(this)
+        : _24HrAnalysis.bind(this);
+
     this.currentData = {
       time: toTheMinute(now),
       price: 0,
@@ -52,6 +67,10 @@ class Pulse {
       this.onNewPrice = func;
     } else if (type === "match") {
       this.onMatch = func;
+    } else if (type === "open") {
+      this.onOpen = func;
+    } else if (type === "close") {
+      this.onClose = func; //goes 1 minutes before actual close
     }
   }
 
@@ -65,39 +84,11 @@ class Pulse {
   onNewPrice() {}
   onMatch() {}
 
-  analyzeNewTime(now) {
-    if (this.lastMinute !== now.getMinutes()) {
-      // will not change after this
-      this.lastMinute = now.getMinutes();
-      //update time
-      this.currentData.time = toTheMinute(now);
-      this.onMin1(this.currentData.price, this.currentData.time);
-      if (this.lastMinute % 5 === 0) {
-        this.onMin5(this.currentData.price, this.currentData.time);
-      }
-      if (this.lastMinute % 15 === 0) {
-        this.onMin15(this.currentData.price, this.currentData.time);
-      }
+  //stock specific functions
+  onOpen() {}
+  onClose() {}
 
-      if (this.lastHour !== now.getHours()) {
-        this.lastHour = now.getHours();
-        this.onHour1(this.currentData.price, this.currentData.time);
-        if (this.lastHour % 6 === 0) {
-          this.onHour6(this.currentData.price, this.currentData.time);
-        }
-
-        if (this.lastDay !== now.getDate()) {
-          this.lastDay = now.getDate();
-          this.onDay(this.currentData.price, this.currentData.time);
-        }
-
-        if (this.lasUtcDay !== now.getUTCDate()) {
-          this.lasUtcDay = now.getUTCDate();
-          this.onUtcDay(this.currentData.price, this.currentData.time);
-        }
-      }
-    }
-  }
+  analyzeNewTime() {}
 }
 
 module.exports = Pulse;
