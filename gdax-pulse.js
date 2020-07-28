@@ -2,7 +2,7 @@ const AnalyzeGdax = require("./AnalyzeFunctions/GdaxAnalyze");
 const toTheMinute = require("./Lib/toTheMinute");
 const AnalyzeBinance = require("./AnalyzeFunctions/BinanceAnalyze");
 const AnalyzeCcxws = require("./AnalyzeFunctions/CcxwsAnalyze");
-const AnalyzeAlpacha = require("./AnalyzeFunctions/Alpacha");
+const AnalyzeAlpaca = require("./AnalyzeFunctions/Alpaca");
 
 const _24HrAnalysis = require("./Lib/24HrMarketTime");
 const StandardStockHours = require("./Lib/StandardStockMarket");
@@ -23,20 +23,20 @@ class Pulse {
       this.analyze = AnalyzeBinance.bind(this);
     } else if (this.exchange == "ccxws") {
       this.analyze = AnalyzeCcxws.bind(this);
-    } else if (this.exchange == "alpacha") {
+    } else if (this.exchange == "alpaca") {
       //delay by half an hour to handle open at 9:30
       let shiftedTime = new Date(now.getTime() - 3600000 / 2);
       this.lastHour = shiftedTime.getUTCHours();
 
-      this.analyze = AnalyzeAlpacha.bind(this);
+      this.analyze = AnalyzeAlpaca.bind(this);
     } else {
       throw new error(
-        "incorrect exchange, select 'gdax', 'binance', 'alpacha', or  anything on CCXWS",
+        "incorrect exchange, select 'gdax', 'binance', 'alpaca', or  anything on CCXWS",
       );
     }
 
     this.analyzeNewTime =
-      this.exchange === "alpacha"
+      this.exchange === "alpaca"
         ? StandardStockHours.bind(this)
         : _24HrAnalysis.bind(this);
 
