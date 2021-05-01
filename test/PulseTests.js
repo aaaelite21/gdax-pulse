@@ -9,7 +9,7 @@ describe("#Gdax-Pulse", () => {
       let pulse = new GdaxPulse();
       sim.websocketClient.on("message", (message) => {
         pulse.analyze(message);
-        assert.equal(pulse.currentData.price, sim.currentPrice);
+        assert.strictEqual(pulse.currentData.price, sim.currentPrice);
       });
       sim.backtest([TwoDays[0]]);
     });
@@ -22,7 +22,7 @@ describe("#Gdax-Pulse", () => {
 
       let target = new Date(TwoDays[0].time).getTime();
       let actual = new Date(pulse.currentData.time).getTime();
-      assert.equal(actual, target);
+      assert.strictEqual(actual, target);
     });
   });
 
@@ -55,8 +55,8 @@ describe("#Gdax-Pulse", () => {
         fiveMinCounter = totalMinutes / 5,
         fifteenMinCounter = totalMinutes / 15,
         hourCounter = totalMinutes / 60,
-        dayCounter = 2, //could get messed up based on local time
-        utcDayCounter = 3;
+        dayCounter = 1, //could get messed up based on local time
+        utcDayCounter = 2;
       pulse.on("m1", () => {
         minCounter--;
       });
@@ -79,12 +79,12 @@ describe("#Gdax-Pulse", () => {
         pulse.analyze(message);
       });
       sim.backtest(TwoDays);
-      assert.equal(minCounter, 0);
-      assert.equal(fiveMinCounter, 0);
-      assert.equal(fifteenMinCounter, 0);
-      assert.equal(hourCounter, 0);
-      assert.equal(dayCounter, 0); //could get messed up based on local time
-      assert.equal(utcDayCounter, 0);
+      assert.strictEqual(minCounter, 0, "minutes are failing");
+      assert.strictEqual(fiveMinCounter, 0, "five minutes are failing");
+      assert.strictEqual(fifteenMinCounter, 0, "fifteen minutes are failing");
+      assert.strictEqual(hourCounter, 0, "hours are failing");
+      assert.strictEqual(dayCounter, 0, "local days are failing"); //could get messed up based on local time
+      assert.strictEqual(utcDayCounter, 0, "utc days are failing");
     });
   });
 
@@ -104,8 +104,9 @@ describe("#Gdax-Pulse", () => {
       });
 
       sim.backtest(TwoDays);
-      assert.equal(match_counter, 0);
+      assert.strictEqual(match_counter, 0);
     });
+    it("properly handle daylight savings", () => {});
   });
 
   describe("#All Events", () => {
@@ -113,8 +114,8 @@ describe("#Gdax-Pulse", () => {
     let pulse = new GdaxPulse();
     it("event functions are fed the current pulse data as parameters", () => {
       function test(price, time) {
-        assert.equal(price, pulse.currentData.price);
-        assert.equal(time.getTime(), pulse.currentData.time.getTime());
+        assert.strictEqual(price, pulse.currentData.price);
+        assert.strictEqual(time.getTime(), pulse.currentData.time.getTime());
       }
       pulse.on("m1", (price, time) => {
         test(price, time);
@@ -157,25 +158,25 @@ describe("#Gdax-Pulse", () => {
       //one test to same time as this test takes 250ms on my machiene
       pulse.on("h1", (price, time) => {
         hourCalled++;
-        assert.notEqual(time.getMinutes(), 0, time.toISOString());
+        assert.notStrictEqual(time.getMinutes(), 0, time.toISOString());
       });
       pulse.on("open", (price, time) => {
         openCalled++;
         let t = new Date(time.toISOString());
-        assert.equal(t.getHours(), 9);
-        assert.equal(t.getMinutes(), 30);
+        assert.strictEqual(t.getHours(), 9);
+        assert.strictEqual(t.getMinutes(), 30);
       });
       pulse.on("d-utc", (price, time) => {
         daysCalled++;
         let t = new Date(time.toISOString());
-        assert.equal(t.getHours(), 9);
-        assert.equal(t.getMinutes(), 30);
+        assert.strictEqual(t.getHours(), 9);
+        assert.strictEqual(t.getMinutes(), 30);
       });
       pulse.on("close", (price, time) => {
         clsoeCalled++;
         let t = new Date(time);
-        assert.equal(t.getMinutes(), 59);
-        assert.equal(t.getHours(), 15);
+        assert.strictEqual(t.getMinutes(), 59);
+        assert.strictEqual(t.getHours(), 15);
       });
       pulse.on("m15", (price, time) => {
         _15sCalled++;
@@ -193,11 +194,11 @@ describe("#Gdax-Pulse", () => {
       });
       sim.backtest(TwoDays);
 
-      assert.equal(openCalled, 2, "opens failed");
-      assert.equal(clsoeCalled, 2, "closes failed");
-      assert.equal(hourCalled, 14, "hours failed");
-      assert.equal(daysCalled, 2, "days failed");
-      assert.equal(_15sCalled, 52 /*6.5 * 2 * 4*/, "days failed");
+      assert.strictEqual(openCalled, 2, "opens failed");
+      assert.strictEqual(clsoeCalled, 2, "closes failed");
+      assert.strictEqual(hourCalled, 14, "hours failed");
+      assert.strictEqual(daysCalled, 2, "days failed");
+      assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "days failed");
     });
   });
 });

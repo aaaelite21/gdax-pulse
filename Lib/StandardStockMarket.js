@@ -16,8 +16,8 @@ module.exports = function (now) {
     let shiftedTime = new Date(now.getTime() - 3600000 / 2);
     //TODO get New york time
     let isDst = this.currentData.time.isDstObserved();
-    let open = isDst ? 13 : 14;
-    let close = isDst ? 19 : 20;
+    let open = isDst ? 14 : 13;
+    let close = isDst ? 20 : 19;
 
     // will not change after this
     this.lastMinute = now.getMinutes();
