@@ -1,66 +1,59 @@
 const toTheMinute = require("./toTheMinute");
-
-Date.prototype.stdTimezoneOffset = function () {
-  var jan = new Date(this.getFullYear(), 0, 1);
-  var jul = new Date(this.getFullYear(), 6, 1);
-  return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-};
-
-Date.prototype.isDstObserved = function () {
-  return this.getTimezoneOffset() < this.stdTimezoneOffset();
-};
+const { Nyc } = require("./ConvertToExchangeTimes");
 
 module.exports = function (now) {
-  if (this.lastMinute !== now.getMinutes()) {
-    //make only work between open hours
-    let shiftedTime = new Date(now.getTime() - 3600000 / 2);
-    //TODO get New york time
-    let isDst = this.currentData.time.isDstObserved();
-    let open = isDst ? 14 : 13;
-    let close = isDst ? 20 : 19;
+  //make only work between open hours
+  let nyc_time = Nyc(now);
+  let open = 9; //09:30 NYC
+  let close = 16; //16:00 NYC
 
-    // will not change after this
-    this.lastMinute = now.getMinutes();
-    //update time
-    this.currentData.time = toTheMinute(now);
+  if ((nyc_time.hour > open || (nyc_time.hour === open && nyc_time.minute >= 30)) &&
+    nyc_time.hour < close) {
+    if (this.lastMinute !== nyc_time.minute) {
 
-    //handle hourle function calls
-    if (this.lastHour !== shiftedTime.getUTCHours()) {
-      this.lastHour = shiftedTime.getUTCHours();
+      //mark current minute
+      this.lastMinute = nyc_time.minute;
+      //update current pulse data time
+      this.currentData.time = toTheMinute(now);
 
-      if (this.lastHour === open) {
-        this.onOpen(this.currentData.price, this.currentData.time);
-        this.onDay(this.currentData.price, this.currentData.time);
-        this.onUtcDay(this.currentData.price, this.currentData.time);
-      }
-
-      if (this.lastHour >= open && this.lastHour <= close) {
-        this.onHour1(this.currentData.price, this.currentData.time);
-      }
-    }
-
-    if (
-      this.currentData.time.getUTCHours() >= open &&
-      this.currentData.time.getUTCHours() <= close &&
-      !(this.currentData.time.getUTCHours() === close && this.lastMinute >= 30)
-    ) {
-      //handle minutly tasks
+      //handle minutly event calls
       this.onMin1(this.currentData.price, this.currentData.time);
 
-      //handle 5 minute function calls
+      //handle 5 minute event calls
       if (this.lastMinute % 5 === 0) {
         this.onMin5(this.currentData.price, this.currentData.time);
       }
 
-      //handle 15 minute function calls
+      //handle 15 minute event calls
       if (this.lastMinute % 15 === 0 || this.last15 > this.lastMinute % 15) {
         this.onMin15(this.currentData.price, this.currentData.time);
       }
       this.last15 = this.lastMinute % 15;
-    }
 
-    if (this.lastMinute === 59 && this.lastHour === close) {
-      this.onClose(this.currentData.price, this.currentData.time);
+      //handle hourly updates
+      if (this.lastHour !== nyc_time.hour && nyc_time.minute >= 30) {
+        //update to reflect change in hour
+        this.lastHour = nyc_time.hour;
+
+        //handle open updates
+        if (nyc_time.hour === open) {
+          this.onOpen(this.currentData.price, this.currentData.time);
+          this.onDay(this.currentData.price, this.currentData.time);
+          this.onUtcDay(this.currentData.price, this.currentData.time);
+        }
+
+        //handle hourly updates
+        if (nyc_time.hour >= open && nyc_time.hour < close) {
+          this.onHour1(this.currentData.price, this.currentData.time);
+        }
+      }
+
+      //handle market close
+      if (nyc_time.minute === 59 && nyc_time.hour === close - 1) {
+        this.onClose(this.currentData.price, this.currentData.time);
+      }
+
+
     }
   }
 };

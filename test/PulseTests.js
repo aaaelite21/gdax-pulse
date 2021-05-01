@@ -151,7 +151,7 @@ describe("#Gdax-Pulse", () => {
 
     it("runs the events the proper number of time", () => {
       let openCalled = 0,
-        clsoeCalled = 0,
+        closeCalled = 0,
         hourCalled = 0,
         daysCalled = 0,
         _15sCalled = 0;
@@ -162,9 +162,8 @@ describe("#Gdax-Pulse", () => {
       });
       pulse.on("open", (price, time) => {
         openCalled++;
-        let t = new Date(time.toISOString());
-        assert.strictEqual(t.getHours(), 9);
-        assert.strictEqual(t.getMinutes(), 30);
+        assert.strictEqual(time.getUTCHours(), 14);
+        assert.strictEqual(time.getMinutes(), 30);
       });
       pulse.on("d-utc", (price, time) => {
         daysCalled++;
@@ -173,7 +172,7 @@ describe("#Gdax-Pulse", () => {
         assert.strictEqual(t.getMinutes(), 30);
       });
       pulse.on("close", (price, time) => {
-        clsoeCalled++;
+        closeCalled++;
         let t = new Date(time);
         assert.strictEqual(t.getMinutes(), 59);
         assert.strictEqual(t.getHours(), 15);
@@ -195,7 +194,7 @@ describe("#Gdax-Pulse", () => {
       sim.backtest(TwoDays);
 
       assert.strictEqual(openCalled, 2, "opens failed");
-      assert.strictEqual(clsoeCalled, 2, "closes failed");
+      assert.strictEqual(closeCalled, 2, "closes failed");
       assert.strictEqual(hourCalled, 14, "hours failed");
       assert.strictEqual(daysCalled, 2, "days failed");
       assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "days failed");
