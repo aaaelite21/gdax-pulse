@@ -48,15 +48,15 @@ describe("#Gdax-Pulse", () => {
   describe("#Time Events", () => {
     let sim = new GdaxSim();
     let pulse = new GdaxPulse();
-    it("runs the events the proper number of time", () => {
+    it("runs the time events the proper number of time", () => {
       //one test to same time as this test takes 250ms on my machiene
       let totalMinutes = 60 * 48; //60 mins per hr * 48hr per two days
       let minCounter = totalMinutes,
         fiveMinCounter = totalMinutes / 5,
         fifteenMinCounter = totalMinutes / 15,
         hourCounter = totalMinutes / 60,
-        dayCounter = 1, //could get messed up based on local time
-        utcDayCounter = 2;
+        dayCounter = 2,
+        utcDayCounter = 3;
       pulse.on("m1", () => {
         minCounter--;
       });
@@ -91,7 +91,7 @@ describe("#Gdax-Pulse", () => {
   describe("#Match Events", () => {
     let sim = new GdaxSim();
     let pulse = new GdaxPulse();
-    it("runs the events the proper number of time", () => {
+    it("runs the match events the proper number of time", () => {
       //one test to same time as this test takes 250ms on my machiene
       let match_counter = TwoDays.length * 4;
 
@@ -149,7 +149,7 @@ describe("#Gdax-Pulse", () => {
     let sim = new GdaxSim();
     let pulse = new GdaxPulse(0, "alpaca");
 
-    it("runs the events the proper number of time", () => {
+    it("runs the time events the proper number of times for stocks", () => {
       let openCalled = 0,
         closeCalled = 0,
         hourCalled = 0,
@@ -197,7 +197,7 @@ describe("#Gdax-Pulse", () => {
       assert.strictEqual(closeCalled, 2, "closes failed");
       assert.strictEqual(hourCalled, 14, "hours failed");
       assert.strictEqual(daysCalled, 2, "days failed");
-      assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "days failed");
+      assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "15 minutes failed");
     });
   });
 });
