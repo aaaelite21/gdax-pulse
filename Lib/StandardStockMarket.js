@@ -7,10 +7,12 @@ module.exports = function (now) {
   let open = 9; //09:30 NYC
   let close = 16; //16:00 NYC
 
-  if ((nyc_time.hour > open || (nyc_time.hour === open && nyc_time.minute >= 30)) &&
-    nyc_time.hour < close) {
+  if (
+    (nyc_time.hour > open ||
+      (nyc_time.hour === open && nyc_time.minute >= 30)) &&
+    nyc_time.hour < close
+  ) {
     if (this.lastMinute !== nyc_time.minute) {
-
       //mark current minute
       this.lastMinute = nyc_time.minute;
       //update current pulse data time
@@ -32,11 +34,8 @@ module.exports = function (now) {
 
       //handle hourly updates
       if (this.lastHour !== nyc_time.hour && nyc_time.minute >= 30) {
-        //update to reflect change in hour
-        this.lastHour = nyc_time.hour;
-
         //handle open updates
-        if (nyc_time.hour === open) {
+        if (nyc_time.hour === open || this.lastHour > nyc_time.hour) {
           this.onOpen(this.currentData.price, this.currentData.time);
           this.onDay(this.currentData.price, this.currentData.time);
           this.onUtcDay(this.currentData.price, this.currentData.time);
@@ -46,14 +45,15 @@ module.exports = function (now) {
         if (nyc_time.hour >= open && nyc_time.hour < close) {
           this.onHour1(this.currentData.price, this.currentData.time);
         }
+
+        //update to reflect change in hour
+        this.lastHour = nyc_time.hour;
       }
 
       //handle market close
       if (nyc_time.minute === 59 && nyc_time.hour === close - 1) {
         this.onClose(this.currentData.price, this.currentData.time);
       }
-
-
     }
   }
 };

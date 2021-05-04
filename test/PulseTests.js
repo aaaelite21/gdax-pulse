@@ -199,5 +199,55 @@ describe("#Gdax-Pulse", () => {
       assert.strictEqual(daysCalled, 2, "days failed");
       assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "15 minutes failed");
     });
+    it("runs the time events the proper number of times for stocks w/ DST", () => {
+      let openCalled = 0,
+        closeCalled = 0,
+        hourCalled = 0,
+        daysCalled = 0,
+        _15sCalled = 0;
+      //one test to same time as this test takes 250ms on my machiene
+      pulse.on("h1", (price, time) => {
+        hourCalled++;
+        assert.notStrictEqual(time.getMinutes(), 0, time.toISOString());
+      });
+      pulse.on("open", (price, time) => {
+        openCalled++;
+        assert.strictEqual(time.getUTCHours(), 13);
+        assert.strictEqual(time.getMinutes(), 30);
+      });
+      pulse.on("d-utc", (price, time) => {
+        daysCalled++;
+        let t = new Date(time.toISOString());
+        assert.strictEqual(t.getUTCHours(), 13);
+        assert.strictEqual(t.getMinutes(), 30);
+      });
+      pulse.on("close", (price, time) => {
+        closeCalled++;
+        let t = new Date(time);
+        assert.strictEqual(t.getUTCHours(), 19);
+        assert.strictEqual(t.getMinutes(), 59);
+      });
+      pulse.on("m15", (price, time) => {
+        _15sCalled++;
+        let t = new Date(time);
+      });
+      sim.websocketClient.on("message", (message) => {
+        if (message.price) {
+          let msg = {
+            ev: "T",
+            price: message.price,
+            timestamp: new Date(message.time).getTime() * 1000000,
+          };
+          pulse.analyze(msg);
+        }
+      });
+      sim.backtest(require("./TwoDaysWithDst.json"));
+
+      assert.strictEqual(openCalled, 2, "opens failed");
+      assert.strictEqual(closeCalled, 2, "closes failed");
+      assert.strictEqual(hourCalled, 14, "hours failed");
+      assert.strictEqual(daysCalled, 2, "days failed");
+      assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "15 minutes failed");
+    });
   });
 });
