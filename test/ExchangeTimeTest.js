@@ -47,5 +47,49 @@ describe("Timezone Conversions", () => {
                 year: 2021
             });
         });
+        it("handles DST before 2:00 am est on the second sunday of march (UTC-5)",()=>{
+            let time = new Date("3/14/2021 05:00 utc");
+            let conversion = Nyc(time);
+            assert.deepStrictEqual(conversion, {
+                day: 14,
+                hour: 0,
+                minute: 0,
+                month: 3,
+                year: 2021
+            }, "should be UTC -5");
+        });
+        it("handles DST after 2:00 am est on the second sunday of march (UTC-4)",()=>{
+            let time = new Date("3/14/2021 07:30 utc");
+            let conversion = Nyc(time);
+            assert.deepStrictEqual(conversion, {
+                day: 14,
+                hour: 3,
+                minute: 30,
+                month: 3,
+                year: 2021
+            }, "should now be UTC -4");
+        });
+        it("handles DST before 2:00 am est on the second sunday of november (UTC-4)",()=>{
+            let time = new Date("11/8/2020 05:30 utc");
+            let conversion = Nyc(time);
+            assert.deepStrictEqual(conversion, {
+                day: 8,
+                hour: 1,
+                minute: 30,
+                month: 11,
+                year: 2020
+            }, "should be UTC -4 before fall behind");
+        });
+        it("handles DST after 2:00 am est on the second sunday of november (UTC-5)",()=>{
+            let time = new Date("11/8/2020 05:00 utc");
+            let conversion = Nyc(time);
+            assert.deepStrictEqual(conversion, {
+                day: 8,
+                hour: 1,
+                minute: 0,
+                month: 11,
+                year: 2020
+            }, "should now be UTC -5 after fall behind");
+        });
     });
 });
