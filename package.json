@@ -22,12 +22,8 @@
     "url": "https://github.com/aaaelite21/gdax-pulse/issues"
   },
   "homepage": "https://github.com/aaaelite21/gdax-pulse#readme",
-  "devDependencies": {
-    "mocha": "^5.2.0"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "gdax-sim": "^1.0.16",
-    "node-binance-api": "^0.9.9",
-    "node-kraken-api": "^0.4.1"
+    "gdax-sim": "^1.0.16"
   }
 }

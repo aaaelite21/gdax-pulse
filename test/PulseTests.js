@@ -112,6 +112,8 @@ describe("#Gdax-Pulse", () => {
   describe("#All Events", () => {
     let sim = new GdaxSim();
     let pulse = new GdaxPulse();
+    pulse.lastHour = 0;
+
     it("event functions are fed the current pulse data as parameters", () => {
       function test(price, time) {
         assert.strictEqual(price, pulse.currentData.price);
@@ -148,6 +150,7 @@ describe("#Gdax-Pulse", () => {
   describe("#Time Events Stocks", () => {
     let sim = new GdaxSim();
     let pulse = new GdaxPulse(0, "alpaca");
+    pulse.lastHour = 0;
 
     it("runs the time events the proper number of times for stocks", () => {
       let openCalled = 0,

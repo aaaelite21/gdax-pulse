@@ -7,7 +7,7 @@ const AnalyzeAlpaca = require("./AnalyzeFunctions/Alpaca");
 const _24HrAnalysis = require("./Lib/24HrMarketTime");
 const StandardStockHours = require("./Lib/StandardStockMarket");
 
-const {Nyc} = require("./Lib/ConvertToExchangeTimes");
+const { Nyc } = require("./Lib/ConvertToExchangeTimes");
 
 class Pulse {
   constructor(delay, exchange) {
