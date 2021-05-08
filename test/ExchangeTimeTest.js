@@ -80,12 +80,23 @@ describe("Timezone Conversions", () => {
                 year: 2020
             }, "should be UTC -4 before fall behind");
         });
-        it("handles DST after 2:00 am est on the second sunday of november (UTC-5)",()=>{
-            let time = new Date("11/8/2020 05:00 utc");
+        it("handles DST at 1:00 am est on the second sunday of november roll back (UTC-5)",()=>{
+            let time = new Date("11/8/2020 06:00 utc");
             let conversion = Nyc(time);
             assert.deepStrictEqual(conversion, {
                 day: 8,
                 hour: 1,
+                minute: 0,
+                month: 11,
+                year: 2020
+            }, "should now be UTC -5 after fall behind");
+        });
+        it("handles DST after 2:00 am est on the second sunday of november (UTC-5)",()=>{
+            let time = new Date("11/8/2020 07:00 utc");
+            let conversion = Nyc(time);
+            assert.deepStrictEqual(conversion, {
+                day: 8,
+                hour: 2,
                 minute: 0,
                 month: 11,
                 year: 2020

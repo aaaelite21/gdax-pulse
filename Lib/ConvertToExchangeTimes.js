@@ -7,13 +7,13 @@ const november = 10;
  * @param {Number} day_of_the_first 
  */
  function GetDateOfSecondSunday(day_of_the_first) {
-    if(0) return 8;     //sunday
-    if(1) return 14;    //monday
-    if(2) return 13;    //tuesday
-    if(3) return 12;    //wednesday
-    if(4) return 11;    //thursday
-    if(5) return 10;    //friday
-    if(6) return 9;     //saturday  
+    if(day_of_the_first === 0) return 8;     //sunday
+    if(day_of_the_first === 1) return 14;    //monday
+    if(day_of_the_first === 2) return 13;    //tuesday
+    if(day_of_the_first === 3) return 12;    //wednesday
+    if(day_of_the_first === 4) return 11;    //thursday
+    if(day_of_the_first === 5) return 10;    //friday
+    if(day_of_the_first === 6) return 9;     //saturday  
 }
 
 /**
