@@ -7,6 +7,8 @@ const AnalyzeAlpaca = require("./AnalyzeFunctions/Alpaca");
 const _24HrAnalysis = require("./Lib/24HrMarketTime");
 const StandardStockHours = require("./Lib/StandardStockMarket");
 
+const { Nyc } = require("./Lib/ConvertToExchangeTimes");
+
 class Pulse {
   constructor(delay, exchange) {
     this.exchange = exchange === undefined ? "gdax" : exchange.toLowerCase();
@@ -25,8 +27,8 @@ class Pulse {
       this.analyze = AnalyzeCcxws.bind(this);
     } else if (this.exchange == "alpaca") {
       //delay by half an hour to handle open at 9:30
-      let shiftedTime = new Date(now.getTime() - 3600000 / 2);
-      this.lastHour = shiftedTime.getUTCHours();
+      let shiftedTime = Nyc(now);
+      this.lastHour = shiftedTime.hour;
 
       this.analyze = AnalyzeAlpaca.bind(this);
     } else {

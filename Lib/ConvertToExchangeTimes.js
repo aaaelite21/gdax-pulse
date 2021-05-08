@@ -1,15 +1,19 @@
+const winter_offset = 5;
+const summer_offset = 4;
+const march = 2;
+const november = 10;
 /**
  * 
  * @param {Number} day_of_the_first 
  */
  function GetDateOfSecondSunday(day_of_the_first) {
-    if(0) return 8;     //sunday
-    if(1) return 14;    //monday
-    if(2) return 13;    //tuesday
-    if(3) return 12;    //wednesday
-    if(4) return 11;    //thursday
-    if(5) return 10;    //friday
-    if(6) return 9;     //saturday  
+    if(day_of_the_first === 0) return 8;     //sunday
+    if(day_of_the_first === 1) return 14;    //monday
+    if(day_of_the_first === 2) return 13;    //tuesday
+    if(day_of_the_first === 3) return 12;    //wednesday
+    if(day_of_the_first === 4) return 11;    //thursday
+    if(day_of_the_first === 5) return 10;    //friday
+    if(day_of_the_first === 6) return 9;     //saturday  
 }
 
 /**
@@ -17,26 +21,37 @@
  * @param {Date} _date 
  */
 function Nyc(_date){
-    let tz_offset = 5;
+    let tz_offset = winter_offset;
 
     let now = new Date((typeof _date === "string" ? new Date(_date) : _date));
     let current_month = now.getUTCMonth();
+    if(current_month > march && current_month <= november){
+        tz_offset = summer_offset;
+    }
 
-    if(current_month === 2 || current_month === 10){ //march or november
-        let day_of_the_month = now.getUTCDate();
-        let first_of_the_month = new Date(now.getTime() - (day_of_the_month-1) * 86400000);
+    let temp_nyc_time = new Date(now.getTime() - tz_offset * 3600000);
+
+    if(current_month === march || current_month === november){
+        let day_of_the_month = temp_nyc_time.getUTCDate();
+        let first_of_the_month = new Date(temp_nyc_time.getTime() - (day_of_the_month-1) * 86400000);
         let day_of_first = first_of_the_month.getUTCDay();
         let date_of_second_sunday = GetDateOfSecondSunday(day_of_first);
 
-        if((current_month === 2 && date_of_second_sunday < day_of_the_month) || 
-        (current_month === 10 && date_of_second_sunday > day_of_the_month)){
-            tz_offset = 4;
+        if((current_month === march && date_of_second_sunday < day_of_the_month) || 
+        (current_month === november && date_of_second_sunday > day_of_the_month)){
+            tz_offset = summer_offset;
         }
 
-        //todo we can skip the day of since stocks don't trade sunday
+        if(current_month === march && date_of_second_sunday === day_of_the_month){
+            let utc_hour = temp_nyc_time.getUTCHours();
+            if(utc_hour >= 2) tz_offset = summer_offset;
+        }
 
-    } else if(current_month > 2 && current_month < 10){
-        tz_offset = 4;
+        if(current_month === november && date_of_second_sunday === day_of_the_month){
+            temp_nyc_time = new Date(now.getTime() - summer_offset * 3600000);
+            let utc_hour = temp_nyc_time.getUTCHours();
+            if(utc_hour >= 2) tz_offset = winter_offset;
+        }
     }
 
     let offset_time = new Date(now.getTime() - tz_offset * 3600000);
