@@ -1,4 +1,4 @@
-const { Nyc } = require("../Lib/ConvertToExchangeTimes");
+const { Nyc } = require("../index").ConvertToExchangeTimes;
 const assert = require("assert");
 
 describe("Timezone Conversions", () => {
