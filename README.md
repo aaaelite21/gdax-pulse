@@ -53,7 +53,7 @@ A delay was introduced to help better manage exchange api compliance. Coinbase P
 
 ```
 const Gdax = require('gdax');
-const GdaxPulse = require('gdax-pulse');
+const GdaxPulse = require('gdax-pulse').Pulse;
 
 let pulse = new GdaxPulse();
 let delayedPulse = new GdaxPulse(10);
@@ -79,7 +79,7 @@ websocket.on("message", data => {
 
 ```
 const binance = require('node-binance-api')().options({});
-const GdaxPulse = require('gdax-pulse');
+const GdaxPulse = require('gdax-pulse').Pulse;
 
 let pulse = new GdaxPulse(0, 'binance');
 
@@ -97,7 +97,7 @@ binance.websockets.trades(['BTCUSDC'], (message) => {
 ```
 const ccxws = require("ccxws");
 const hitbtcExchange = new ccxws.hitbtc();
-const GdaxPulse = require('../gdax-pulse');
+const GdaxPulse = require('../gdax-pulse').Pulse;
 
 let pulse = new GdaxPulse(0, 'ccxws');
 
@@ -120,6 +120,21 @@ hitbtcExchange.subscribeTicker(market);
 
 - Please refer to [ccxws](https://github.com/altangent/ccxws) ReadMe for further instruction.
 - Also note some exchanges (Kraken in praticular) use a different notation.
+
+## Convert To Exchagne Time Endpoint
+This is intended to help convert UTC time to the local time of the exchange.
+```
+    const {Nyc} = require('../gdax-pulse').ConvertToExchangeTimes;
+    let time = new Date("4/16/2021 013:30 utc");
+    let conversion = Nyc(time);
+    //{
+    //    day: 16,
+    //   hour: 9,
+    //    minute: 30,
+    //    month: 4,
+    //    year: 2021
+    //};
+```
 
 ## Visit Our The Dev Blog
 
