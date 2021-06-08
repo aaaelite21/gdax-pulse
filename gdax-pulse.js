@@ -19,18 +19,19 @@ class Pulse {
     this.lastDay = now.getDate();
     this.lasUtcDay = now.getUTCDate();
     this.delay = delay !== undefined ? delay : 0;
+    this.locked = false;
     if (this.exchange == "gdax") {
-      this.analyze = AnalyzeGdax.bind(this);
+      this._analyze = AnalyzeGdax.bind(this);
     } else if (this.exchange == "binance") {
-      this.analyze = AnalyzeBinance.bind(this);
+      this._analyze = AnalyzeBinance.bind(this);
     } else if (this.exchange == "ccxws") {
-      this.analyze = AnalyzeCcxws.bind(this);
+      this._analyze = AnalyzeCcxws.bind(this);
     } else if (this.exchange == "alpaca") {
       //delay by half an hour to handle open at 9:30
       let shiftedTime = Nyc(now);
       this.lastHour = shiftedTime.hour;
 
-      this.analyze = AnalyzeAlpaca.bind(this);
+      this._analyze = AnalyzeAlpaca.bind(this);
     } else {
       throw new error(
         "incorrect exchange, select 'gdax', 'binance', 'alpaca', or  anything on CCXWS",
@@ -48,7 +49,14 @@ class Pulse {
     };
   }
 
-  analyze(message) {}
+  analyze(message) {
+    if (!this.loccked) {
+      this.locked = true;
+      this._analyze(message);
+      this.locked = false;
+    }
+  }
+  _analyze(message) {}
 
   on(type, func) {
     if (type === "m1") {
