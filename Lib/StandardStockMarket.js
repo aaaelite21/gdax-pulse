@@ -4,13 +4,13 @@ const { Nyc } = require("./ConvertToExchangeTimes");
 module.exports = function (now) {
   //make only work between open hours
   let nyc_time = Nyc(now);
-  let open = 9; //09:30 NYC
-  let close = 16; //16:00 NYC
+  let open = this.open.hour; //09:30 NYC
+  let close = this.close.hour; //16:00 NYC
 
   if (
     (nyc_time.hour > open ||
       (nyc_time.hour === open && nyc_time.minute >= 30)) &&
-    nyc_time.hour < close
+    nyc_time.hour <= close
   ) {
     if (this.lastMinute !== nyc_time.minute) {
       //mark current minute
@@ -42,7 +42,7 @@ module.exports = function (now) {
         }
 
         //handle hourly updates
-        if (nyc_time.hour >= open && nyc_time.hour < close) {
+        if (nyc_time.hour >= open && nyc_time.hour <= close) {
           this.onHour1(this.currentData.price, this.currentData.time);
         }
 
@@ -51,7 +51,7 @@ module.exports = function (now) {
       }
 
       //handle market close
-      if (nyc_time.minute === 59 && nyc_time.hour === close - 1) {
+      if (nyc_time.minute === this.close.minutes && nyc_time.hour === close) {
         this.onClose(this.currentData.price, this.currentData.time);
       }
     }

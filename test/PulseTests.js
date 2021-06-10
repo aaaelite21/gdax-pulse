@@ -253,4 +253,113 @@ describe("#Gdax-Pulse", () => {
       assert.strictEqual(_15sCalled, 52 /*6.5 * 2 * 4*/, "15 minutes failed");
     });
   });
+
+  describe("#Options and Settings", () => {
+    it("allows the user to configure the open hour and minute", () => {
+      let p = new GdaxPulse({
+        open: {
+          hour: 9,
+          minutes: 30,
+        },
+      });
+      assert.strictEqual(p.open.hour, 9);
+      assert.strictEqual(p.open.minutes, 30);
+    });
+    it("allows the user to configure the close hour and minute", () => {
+      let p = new GdaxPulse({
+        close: {
+          hour: 9,
+          minutes: 30,
+        },
+      });
+      assert.strictEqual(p.close.hour, 9);
+      assert.strictEqual(p.close.minutes, 30);
+    });
+    it("allows the user to configure the exchange", () => {
+      let p = new GdaxPulse({
+        exchange: "ccxws",
+      });
+      assert.strictEqual(p.exchange, "ccxws");
+    });
+    it("allows the user to configure the delay", () => {
+      let p = new GdaxPulse({
+        delay: 15,
+      });
+      assert.strictEqual(p.delay, 15);
+    });
+    it("allows the user to configure the delay the old way but keep options", () => {
+      let p = new GdaxPulse(10, {
+        close: {
+          hour: 9,
+          minutes: 30,
+        },
+      });
+      assert.strictEqual(p.delay, 10);
+      assert.strictEqual(p.close.hour, 9);
+      assert.strictEqual(p.close.minutes, 30);
+      assert.strictEqual(p.exchange, "gdax");
+    });
+    it("allows the user to configure the delay and exchange the old way but keep options", () => {
+      let p = new GdaxPulse(10, "ccxws", {
+        close: {
+          hour: 9,
+          minutes: 30,
+        },
+      });
+      assert.strictEqual(p.delay, 10);
+      assert.strictEqual(p.close.hour, 9);
+      assert.strictEqual(p.close.minutes, 30);
+      assert.strictEqual(p.exchange, "ccxws");
+    });
+    it("default close for alpaca close time is 1559", () => {
+      let p = new GdaxPulse(10, "alpaca");
+      assert.strictEqual(p.close.hour, 15);
+      assert.strictEqual(p.close.minutes, 59);
+    });
+    it("default open for alpaca close time is 0930", () => {
+      let p = new GdaxPulse(10, "alpaca");
+      assert.strictEqual(p.open.hour, 9);
+      assert.strictEqual(p.open.minutes, 30);
+    });
+    it("minutes above 59 for open and close goto 59", () => {
+      let p = new GdaxPulse(10, "alpaca", {
+        open: { minutes: 60 },
+        close: { minutes: 60 },
+      });
+      assert.strictEqual(p.close.minutes, 59);
+      assert.strictEqual(p.open.minutes, 59);
+    });
+    it("minutes below 0 for open and close goto 0", () => {
+      let p = new GdaxPulse(10, "gdax", {
+        open: { minutes: -1 },
+        close: { minutes: -1 },
+      });
+      assert.strictEqual(p.close.minutes, 0);
+      assert.strictEqual(p.open.minutes, 0);
+    });
+    it("hour above 23 for open and close goto 23", () => {
+      let p = new GdaxPulse(10, "gdax", {
+        open: { hour: 24 },
+        close: { hour: 24 },
+      });
+      assert.strictEqual(p.close.hour, 23);
+      assert.strictEqual(p.open.hour, 23);
+    });
+    it("minutes below 0 for open and close goto 0", () => {
+      let p = new GdaxPulse(10, "gdax", {
+        open: { hour: -1 },
+        close: { hour: -1 },
+      });
+      assert.strictEqual(p.close.hour, 0);
+      assert.strictEqual(p.open.hour, 0);
+    });
+    it("hour below 9 for open and close goto 9", () => {
+      let p = new GdaxPulse(10, "alpaca", {
+        open: { hour: 8 },
+        close: { hour: 8 },
+      });
+      assert.strictEqual(p.close.hour, 9);
+      assert.strictEqual(p.open.hour, 9);
+    });
+  });
 });

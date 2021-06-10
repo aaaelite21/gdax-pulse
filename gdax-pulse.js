@@ -10,30 +10,55 @@ const StandardStockHours = require("./Lib/StandardStockMarket");
 const { Nyc } = require("./Lib/ConvertToExchangeTimes");
 
 class Pulse {
-  constructor(delay, exchange) {
-    this.exchange = exchange === undefined ? "gdax" : exchange.toLowerCase();
+  constructor(delay, exchange, options) {
+    //code for backwards compatabality
+    if (typeof delay === "object") {
+      options = delay;
+    } else if (typeof exchange === "object") {
+      options = exchange;
+      options.delay = delay;
+      options.exchange = options?.exchange ?? "gdax";
+    } else if (typeof options === "object") {
+      options.delay = delay ?? 0;
+      options.exchange = exchange;
+      options.exchange = exchange?.toLowerCase() ?? "gdax";
+    }
+
+    this.exchange = options?.exchange ?? exchange?.toLowerCase() ?? "gdax";
+    this.delay = options?.delay ?? delay ?? 0;
+
+    //end backwards compabality code
+    this.open = {
+      hour: options?.open?.hour ?? (this.exchange === "alpaca" ? 9 : 0),
+      minutes: options?.open?.minutes ?? (this.exchange === "alpaca" ? 30 : 0),
+    };
+    this.close = {
+      hour: options?.close?.hour ?? (this.exchange === "alpaca" ? 15 : 23),
+      minutes: options?.close?.minutes ?? 59,
+    };
+
+    this.validateOpenAndClose();
+
     let now = new Date();
     this.lastMinute = now.getMinutes();
     this.last15 = this.lastMinute % 15;
     this.lastHour = now.getHours();
     this.lastDay = now.getDate();
     this.lasUtcDay = now.getUTCDate();
-    this.delay = delay !== undefined ? delay : 0;
     this.locked = false;
-    if (this.exchange == "gdax") {
+    if (this.exchange === "gdax") {
       this._analyze = AnalyzeGdax.bind(this);
-    } else if (this.exchange == "binance") {
+    } else if (this.exchange === "binance") {
       this._analyze = AnalyzeBinance.bind(this);
-    } else if (this.exchange == "ccxws") {
+    } else if (this.exchange === "ccxws") {
       this._analyze = AnalyzeCcxws.bind(this);
-    } else if (this.exchange == "alpaca") {
-      //delay by half an hour to handle open at 9:30
+    } else if (this.exchange === "alpaca") {
       let shiftedTime = Nyc(now);
       this.lastHour = shiftedTime.hour;
 
       this._analyze = AnalyzeAlpaca.bind(this);
     } else {
-      throw new error(
+      throw new Error(
         "incorrect exchange, select 'gdax', 'binance', 'alpaca', or  anything on CCXWS",
       );
     }
@@ -47,6 +72,31 @@ class Pulse {
       time: toTheMinute(now),
       price: 0,
     };
+  }
+
+  validateOpenAndClose() {
+    //check min minutes
+    if (this.close.minutes < 0) this.close.minutes = 0;
+    if (this.open.minutes < 0) this.open.minutes = 0;
+    //check max minutes
+    if (this.close.minutes > 59) this.close.minutes = 59;
+    if (this.open.minutes > 59) this.open.minutes = 59;
+    //check min hours
+    if (this.close.hour < 0) this.close.hour = 0;
+    if (this.open.hour < 0) this.open.hour = 0;
+    //check max hours
+    if (this.close.hour > 23) this.close.hour = 23;
+    if (this.open.hour > 23) this.open.hour = 23;
+
+    //check is stocks specific time
+    if (this.exchange === "alpaca") {
+      //check max hours
+      if (this.close.hour > 15) this.close.hour = 15;
+      if (this.open.hour > 15) this.close.hour = 15;
+      //check min hours
+      if (this.close.hour < 9) this.close.hour = 9;
+      if (this.open.hour < 9) this.open.hour = 9;
+    }
   }
 
   analyze(message) {
