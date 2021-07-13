@@ -33,7 +33,12 @@ module.exports = function (now) {
       this.last15 = this.lastMinute % 15;
 
       //handle hourly updates
-      if (this.lastHour !== nyc_time.hour && nyc_time.minute >= 30) {
+      if (
+        (this.lastHour !== nyc_time.hour && nyc_time.minute >= 30) ||
+        (this.lastHour === nyc_time.hour &&
+          this.lastMinute === 30 &&
+          this.lastHour === open)
+      ) {
         //handle open updates
         if (nyc_time.hour === open || this.lastHour > nyc_time.hour) {
           this.onOpen(this.currentData.price, this.currentData.time);

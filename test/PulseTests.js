@@ -187,9 +187,9 @@ describe("#Gdax-Pulse", () => {
       sim.websocketClient.on("message", (message) => {
         if (message.price) {
           let msg = {
-            ev: "T",
-            price: message.price,
-            timestamp: new Date(message.time).getTime() * 1000000,
+            T: "t",
+            Price: message.price,
+            Timestamp: new Date(message.time),
           };
           pulse.analyze(msg);
         }
@@ -237,9 +237,9 @@ describe("#Gdax-Pulse", () => {
       sim.websocketClient.on("message", (message) => {
         if (message.price) {
           let msg = {
-            ev: "T",
+            T: "t",
             price: message.price,
-            timestamp: new Date(message.time).getTime() * 1000000,
+            Timestamp: new Date(message.time).getTime(),
           };
           pulse.analyze(msg);
         }

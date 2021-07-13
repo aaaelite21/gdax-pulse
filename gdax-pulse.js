@@ -55,6 +55,7 @@ class Pulse {
     } else if (this.exchange === "alpaca") {
       let shiftedTime = Nyc(now);
       this.lastHour = shiftedTime.hour;
+      this.lastMinute = shiftedTime.minute;
 
       this._analyze = AnalyzeAlpaca.bind(this);
     } else {
