@@ -9,7 +9,7 @@ module.exports = function (now) {
 
   if (
     (nyc_time.hour > open ||
-      (nyc_time.hour === open && nyc_time.minute >= 30)) &&
+      (nyc_time.hour === open && nyc_time.minute >= this.open.minutes)) &&
     nyc_time.hour <= close
   ) {
     if (this.lastMinute !== nyc_time.minute) {
