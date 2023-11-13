@@ -83,13 +83,13 @@ describe("Timezone Conversions", () => {
         "should now be UTC -4",
       );
     });
-    it("handles DST before 2:00 am est on the second sunday of november (UTC-4)", () => {
-      let time = new Date("11/8/2020 05:30 utc");
+    it("handles DST before 2:00 am est on the 1st sunday of november (UTC-4)", () => {
+      let time = new Date("11/1/2020 05:30 utc");
       let conversion = Nyc(time);
       assert.deepStrictEqual(
         conversion,
         {
-          day: 8,
+          day: 1,
           hour: 1,
           minute: 30,
           month: 11,
